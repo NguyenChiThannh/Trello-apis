@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
-import {BOARD_TYPES } from '~/utils/constants'
+import { BOARD_TYPES } from '~/utils/constants'
 import { cardModel } from '~/models/cardModel'
 import { columnModel } from '~/models/columnModel'
 
@@ -29,9 +29,9 @@ const validateBeforeCreate = async (data) => {
 
 const createNew = async (data) => {
   try {
-    console.log(data)
+    //console.log(data)
     const validData = await validateBeforeCreate(data)
-    console.log(validData)
+    //console.log(validData)
     return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
   } catch (error) {
     throw new Error(error)
