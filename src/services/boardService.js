@@ -47,7 +47,24 @@ const getDetails = async (boardId) => {
   }
 }
 
+const update = async (boardId, reqBody) => {
+  try {
+    const udpateData = {
+      ...reqBody,
+      updateAt: Date.now()
+    }
+    // Gọi tới tầng Model để sử lý bản ghi trong Database
+    const udpateBoard = await boardModel.update(boardId, udpateData )
+
+    // Luôn phải có return
+    return udpateBoard
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const boardService = {
   createNew,
   getDetails,
+  update,
 }
