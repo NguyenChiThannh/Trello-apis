@@ -49,6 +49,17 @@ const findOneById = async (id) => {
   }
 }
 
+const deleteOneById = async (id) => {
+  try {
+    const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).deleteOne({
+      _id: new ObjectId(id)
+    })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 // push một giá trị của cardId vào cuối mảng cardOrderIds
 const pushCardOrderIds = async (card) => {
   try {
@@ -96,4 +107,5 @@ export const columnModel = {
   findOneById,
   pushCardOrderIds,
   update,
+  deleteOneById,
 }
