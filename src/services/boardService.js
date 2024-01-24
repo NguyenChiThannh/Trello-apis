@@ -1,5 +1,7 @@
 import { slugify } from '~/utils/formatters'
 import { boardModel } from '~/models/boardModel'
+import { columnModel } from '~/models/columnModel'
+import { cardModel } from '~/models/cardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
@@ -49,15 +51,40 @@ const getDetails = async (boardId) => {
 
 const update = async (boardId, reqBody) => {
   try {
-    const udpateData = {
+    const updateData = {
       ...reqBody,
       updateAt: Date.now()
     }
     // Gọi tới tầng Model để sử lý bản ghi trong Database
-    const udpateBoard = await boardModel.update(boardId, udpateData )
+    const updateBoard = await boardModel.update(boardId, updateData )
 
     // Luôn phải có return
-    return udpateBoard
+    return updateBoard
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const moveCardToDifferentColumn = async (reqBody) => {
+  try {
+  // Khi di chuyển sang column khác:
+  // Bước 1: Cập nhật mảng cardOrderIds của column ban đầu chứa nó (xóa cái _id của Card ra khỏi mảng)
+    await columnModel.update(reqBody.prevColumnId, {
+      cardOrderIds: reqBody.prevCardOrderIds,
+      updateAt: Date.now()
+    })
+    // Bước 2: Cập nhật mảng cardOrderIds của column tiếp theo ( thêm _id của Card vào mảng)
+    await columnModel.update(reqBody.nextColumnId, {
+      cardOrderIds: reqBody.nextCardOrderIds,
+      updateAt: Date.now()
+    })
+    // Bước 3: Cập nhật lại trường columnId mới của cái Card đã kéo
+    await cardModel.update(reqBody.currentCardId, {
+      columnId : reqBody.nextColumnId,
+
+    } )
+    // Luôn phải có return
+    return {updateResult: 'Successfully!'}
   } catch (error) {
     throw new Error(error)
   }
@@ -67,4 +94,5 @@ export const boardService = {
   createNew,
   getDetails,
   update,
+  moveCardToDifferentColumn,
 }
