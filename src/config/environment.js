@@ -8,4 +8,7 @@ export const env = {
 
   BUILD_MODE:process.env.BUILD_MODE,
 
+  JWT_ACCESS_TOKEN: process.env.JWT_ACCESS_TOKEN,
+  JWT_REFRESH_TOKEN: process.env.JWT_REFRESH_TOKEN,
+
 }

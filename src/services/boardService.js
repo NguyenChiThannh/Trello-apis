@@ -15,7 +15,7 @@ const createNew = async (reqBody) => {
 
     // Gọi tới tầng Model để sử lý bản ghi trong Database
     const createdBoard = await boardModel.createNew(newBoard)
-    // Lấy bản ghi findOne
+    // Lấy bản ghi
     const getNewBoard = await boardModel.findOneById(createdBoard.insertedId)
 
     // Luôn phải có return
@@ -84,7 +84,7 @@ const moveCardToDifferentColumn = async (reqBody) => {
 
     } )
     // Luôn phải có return
-    return {updateResult: 'Successfully!'}
+    return { updateResult: 'Successfully!' }
   } catch (error) {
     throw new Error(error)
   }

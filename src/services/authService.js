@@ -1,0 +1,82 @@
+import bcrypt from 'bcrypt'
+import { userModel } from '~/models/userModel'
+import jwt from 'jsonwebtoken'
+import { env } from '~/config/environment'
+import { genarateToken } from '~/config/token'
+
+let refreshTokens = []
+const registerUser = async (reqBody) => {
+  try {
+    const salt = await bcrypt.genSalt(10)
+    const hashed = await bcrypt.hash(reqBody.password, salt)
+    const user = await userModel.findOneUser(reqBody.username)
+    if (user) return 'USERNAME ALREADY EXISTS'
+    else {
+      const newUser = {
+        username: reqBody.username,
+        email: reqBody.email,
+        password: hashed,
+      }
+      await userModel.createUser(newUser)
+    }
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+}
+
+const loginUser = async (reqBody) => {
+  try {
+    const user = await userModel.findOneUser(reqBody.username)
+    if (!user) return 'NOT FOUND USERNAME'
+    const comparePassword = await bcrypt.compare(
+      reqBody.password,
+      user.password,
+    )
+    if (!comparePassword) return 'PASSWORD IS WRONG'
+    if (user && comparePassword) {
+      const accessToken = genarateToken.genarateAccessToken(user)
+      const refreshToken = genarateToken.genarateRefreshToken(user)
+      refreshTokens.push(refreshToken)
+      return { accessToken, refreshToken }
+    }
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+}
+
+const requestRefreshToken = async (refreshToken) => {
+  try {
+    if (!refreshTokens.includes(refreshToken)) {
+      return null
+    }
+    return jwt.verify(refreshToken, env.JWT_REFRESH_TOKEN, (err, user) => {
+      if (err) {
+        throw new Error(err)
+      }
+      refreshTokens = refreshTokens.filter((token) => token !== refreshToken)
+      // create new access token. refresh token
+      const newAccessToken = genarateToken.genarateAccessToken(user)
+      const newRefreshToken = genarateToken.genarateRefreshToken(user)
+      refreshTokens.push(newRefreshToken)
+      return {
+        newAccessToken,
+        newRefreshToken,
+      }
+    })
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const logoutUser = async (refreshToken) => {
+  refreshTokens = refreshTokens.filter((token) => token !== refreshToken)
+}
+
+export const authService = {
+  registerUser,
+  loginUser,
+  requestRefreshToken,
+  logoutUser,
+}

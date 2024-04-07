@@ -38,7 +38,7 @@ const update = async (req, res, next) => {
     //console.log('req.params:', req.params)
     const boardId = req.params.id
     //Điều hướng sang tầng Service
-    const updateBoard = await boardService.update(boardId , req.body)
+    const updateBoard = await boardService.update(boardId, req.body)
 
     // Có kết quả thì trả về phía Client
     res.status(StatusCodes.OK).json(updateBoard)

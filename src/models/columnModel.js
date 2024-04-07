@@ -71,7 +71,7 @@ const pushCardOrderIds = async (card) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 
@@ -96,7 +96,7 @@ const update = async (columnId, updateData) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 

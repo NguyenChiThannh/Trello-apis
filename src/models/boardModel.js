@@ -89,11 +89,11 @@ const pushColumnOrderIds = async (column) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 
-// Lấy 1 phần tử ra khỏi 
+// Lấy 1 phần tử ra khỏi
 const pullColumnOrderIds = async (column) => {
   try {
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
@@ -105,7 +105,7 @@ const pullColumnOrderIds = async (column) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 
@@ -131,7 +131,7 @@ const update = async (boardId, updateData) => {
     return result
   }
   catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 

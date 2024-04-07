@@ -3,6 +3,8 @@ import { StatusCodes } from 'http-status-codes'
 import { boardRoute } from '~/routes/v1/boardRoute'
 import { columnRoute } from '~/routes/v1/columnRoute'
 import { cardRoute } from '~/routes/v1/cardRoute'
+import { authRoute } from '~/routes/v1/authRoute'
+import { userRoute } from './userRoute'
 
 const Router = express.Router()
 
@@ -10,14 +12,19 @@ Router.get('/status', (req, res) => {
   res.status(StatusCodes.OK).json({ message: 'Hello world' })
 })
 
-// Board APi
+// Board api
 Router.use('/boards', boardRoute)
 
-// Column APi
+// Column api
 Router.use('/columns', columnRoute)
 
-// Card APi
+// Card api
 Router.use('/cards', cardRoute)
 
+// Auth api
+Router.use('/auth', authRoute)
+
+// User api
+Router.use('/user', userRoute)
 
 export const APIs_V1 = Router
