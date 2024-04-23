@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes'
-import { result } from 'lodash'
 import { boardService } from '~/services/boardService'
 const createNew = async (req, res, next) => {
   try {
@@ -28,6 +27,20 @@ const getDetails = async (req, res, next) => {
 
     // Có kết quả thì trả về phía Client
     res.status(StatusCodes.OK).json(board)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getAll = async (req, res, next) => {
+  try {
+    //console.log('req.params:', req.params)
+    const userId = req.body.userId
+    //Điều hướng sang tầng Service
+    const boards = await boardService.getAll(userId)
+
+    // Có kết quả thì trả về phía Client
+    res.status(StatusCodes.OK).json(boards)
   } catch (error) {
     next(error)
   }
@@ -64,4 +77,5 @@ export const boardController = {
   getDetails,
   update,
   moveCardToDifferentColumn,
+  getAll,
 }

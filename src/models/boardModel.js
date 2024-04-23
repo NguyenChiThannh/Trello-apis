@@ -10,6 +10,7 @@ import { columnModel } from '~/models/columnModel'
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required().min(3).max(50).trim().strict(),
+  userId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   slug: Joi.string().required().min(3).trim().strict(),
   description: Joi.string().required().min(3).max(256).trim().strict(),
   type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
@@ -34,7 +35,10 @@ const createNew = async (data) => {
     //console.log(data)
     const validData = await validateBeforeCreate(data)
     //console.log(validData)
-    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validData)
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne({
+      ...validData,
+      userId: new ObjectId(validData.userId)
+    })
   } catch (error) {
     throw new Error(error)
   }
@@ -45,6 +49,18 @@ const findOneById = async (id) => {
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
       _id: new ObjectId(id)
     })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const findAllByUserId = async (id) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).find(
+      { userId: new ObjectId(id) },
+      { projection: { columnOrderIds: 0, userId: 0 } },
+    ).toArray()
     return result
   } catch (error) {
     throw new Error(error)
@@ -77,7 +93,7 @@ const getDetails = async (id) => {
   }
 }
 
-// push một giá trị cảu columnId vào cuối mảng columnOrdewrIds
+// push một giá trị của columnId vào cuối mảng columnOrdewrIds
 const pushColumnOrderIds = async (column) => {
   try {
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
@@ -144,4 +160,5 @@ export const boardModel = {
   pushColumnOrderIds,
   pullColumnOrderIds,
   update,
+  findAllByUserId,
 }

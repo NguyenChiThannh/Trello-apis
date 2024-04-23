@@ -4,8 +4,7 @@ import ApiError from '~/utils/ApiError'
 
 const registerUser = async (req, res, next) => {
   const correctCondition = Joi.object({
-    username: Joi.string().required().min(5).max(30).trim().strict(),
-    email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+    email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
     //password: Joi.string().required().trim().strict(),
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
   })
@@ -21,7 +20,7 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   const correctCondition = Joi.object({
-    username: Joi.string().required().min(5).max(30).trim().strict(),
+    email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
     //password: Joi.string().required().trim().strict(),
     password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
   })

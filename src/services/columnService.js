@@ -60,7 +60,7 @@ const deleteById = async (columnId) => {
     await boardModel.pullColumnOrderIds(targetColumn)
 
     // Luôn phải có return
-    return { deleteResult: 'Column and its Cards deleted successfully!' }
+    return { deleteResult: 'Column and its Cards deleted successful!' }
   } catch (error) {
     throw new Error(error)
   }

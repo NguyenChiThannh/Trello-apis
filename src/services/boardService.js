@@ -49,6 +49,16 @@ const getDetails = async (boardId) => {
   }
 }
 
+const getAll = async (userId) => {
+  try {
+    // Gọi tới tầng Model để sử lý bản ghi trong Database
+    const boards = await boardModel.findAllByUserId(userId)
+    return boards
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const update = async (boardId, reqBody) => {
   try {
     const updateData = {
@@ -84,7 +94,7 @@ const moveCardToDifferentColumn = async (reqBody) => {
 
     } )
     // Luôn phải có return
-    return { updateResult: 'Successfully!' }
+    return { updateResult: 'Successful!' }
   } catch (error) {
     throw new Error(error)
   }
@@ -95,4 +105,5 @@ export const boardService = {
   getDetails,
   update,
   moveCardToDifferentColumn,
+  getAll,
 }

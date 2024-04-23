@@ -8,11 +8,33 @@ import { env } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
+import passport from 'passport'
+import passportSetup from '~/config/passport'
+import session from 'express-session'
+// import { Redis } from 'ioredis'
+// import RedisStore from 'connect-redis'
+
 
 const START_SEVER = () => {
 
   const app = express()
 
+  // Redis
+  // const clientRedis = new Redis()
+  // app.set('trust proxy', 1) // trust first proxy
+  app.use(session({
+    secret: 'login session',
+    // store: new RedisStore({ client: clientRedis }),
+    resave: false, // Đặt lại session cho mỗi request
+    saveUninitialized: true,
+    cookie: { secure: false, httpOnly: true }
+  }))
+
+  //Pasport
+  app.use(passport.initialize())
+  app.use(passport.session())
+
+  // Cors
   app.use(cors(corsOptions))
 
   // Config cookie

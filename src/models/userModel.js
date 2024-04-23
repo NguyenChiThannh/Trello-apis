@@ -4,11 +4,12 @@ import { GET_DB } from '~/config/mongodb'
 
 const USER_COLLECTION_NAME = 'users'
 const USER_COLLECTION_SCHEMA = Joi.object({
-  username: Joi.string().required().min(5).max(30).trim().strict(),
-  email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+  email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
   password: Joi.string().required().trim().strict(),
-  //password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
+  displayName:Joi.string().required().trim().strict(),
+  avatar:Joi.string().trim().strict(),
   admin: Joi.boolean().default(false),
+  loginType: Joi.string().default(null),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
 })
 
@@ -27,19 +28,28 @@ const createUser = async (newUser) => {
   }
 }
 
-const findOneUser = async (userName) => {
+const findOneUserByEmail = async (email) => {
   try {
     return await GET_DB().collection(USER_COLLECTION_NAME).findOne(
-      { username: userName }
+      { email: email }
     )
   } catch (error) {
     throw new Error(error)
   }
 }
 
+const findOneUserById = async (id) => {
+  try {
+    return await GET_DB().collection(USER_COLLECTION_NAME).findOne(
+      { _id: new ObjectId(id) }
+    )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 const findAllUsers = async () => {
   try {
-    const allUsers = await GET_DB().collection('users').find().toArray()
+    const allUsers = await GET_DB().collection(USER_COLLECTION_NAME).find().toArray()
     return allUsers
   } catch (error) {
     throw new Error(error)
@@ -57,9 +67,11 @@ const deleteUser = async (id) => {
   }
 }
 
+
 export const userModel = {
   createUser,
-  findOneUser,
+  findOneUserByEmail,
   findAllUsers,
   deleteUser,
+  findOneUserById,
 }

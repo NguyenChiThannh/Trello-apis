@@ -7,18 +7,17 @@ import { genarateToken } from '~/config/token'
 let refreshTokens = []
 const registerUser = async (reqBody) => {
   try {
+    const user = await userModel.findOneUserByEmail(reqBody?.email)
+    if (user) return 'USER ALREADY EXISTS'
     const salt = await bcrypt.genSalt(10)
     const hashed = await bcrypt.hash(reqBody.password, salt)
-    const user = await userModel.findOneUser(reqBody.username)
-    if (user) return 'USERNAME ALREADY EXISTS'
-    else {
-      const newUser = {
-        username: reqBody.username,
-        email: reqBody.email,
-        password: hashed,
-      }
-      await userModel.createUser(newUser)
+    const newUser = {
+      email: reqBody.email,
+      password: hashed,
+      displayName: reqBody.email.match(/^(.*?)@/)[1],
     }
+    const createUser = await userModel.createUser(newUser)
+    return createUser
   }
   catch (error) {
     throw new Error(error)
@@ -27,8 +26,8 @@ const registerUser = async (reqBody) => {
 
 const loginUser = async (reqBody) => {
   try {
-    const user = await userModel.findOneUser(reqBody.username)
-    if (!user) return 'NOT FOUND USERNAME'
+    const user = await userModel.findOneUserByEmail(reqBody.email)
+    if (!user) return 'NOT FOUND EMAIL'
     const comparePassword = await bcrypt.compare(
       reqBody.password,
       user.password,
@@ -38,7 +37,10 @@ const loginUser = async (reqBody) => {
       const accessToken = genarateToken.genarateAccessToken(user)
       const refreshToken = genarateToken.genarateRefreshToken(user)
       refreshTokens.push(refreshToken)
-      return { accessToken, refreshToken }
+      return {
+        ...user,
+        accessToken,
+        refreshToken }
     }
   }
   catch (error) {
@@ -71,7 +73,29 @@ const requestRefreshToken = async (refreshToken) => {
 }
 
 const logoutUser = async (refreshToken) => {
-  refreshTokens = refreshTokens.filter((token) => token !== refreshToken)
+  try {
+    refreshTokens = refreshTokens.filter((token) => token !== refreshToken)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const findOneUserByEmail = async (email) => {
+  try {
+    const user = userModel.findOneUserByEmail(email)
+    return user
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const findOneUserById = async (id) => {
+  try {
+    const user = userModel.findOneUserById(id)
+    return user
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 
 export const authService = {
@@ -79,4 +103,6 @@ export const authService = {
   loginUser,
   requestRefreshToken,
   logoutUser,
+  findOneUserByEmail,
+  findOneUserById,
 }
