@@ -57,11 +57,21 @@ const findAllUsers = async () => {
 }
 
 const deleteUser = async (id) => {
-
   try {
     return await GET_DB().collection(USER_COLLECTION_NAME).findOneAndDelete({
       _id: new ObjectId(id),
     })
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const updatePassword = async (email, password) => {
+  try {
+    return await GET_DB().collection(USER_COLLECTION_NAME).findOneAndUpdate(
+      { email: email },
+      { $set: { 'password' : password } }
+    )
   } catch (error) {
     throw new Error(error)
   }
@@ -74,4 +84,5 @@ export const userModel = {
   findAllUsers,
   deleteUser,
   findOneUserById,
+  updatePassword
 }

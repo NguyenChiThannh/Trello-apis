@@ -7,7 +7,7 @@ const OTP_COLLECTION_SCHEMA = Joi.object({
   otp: Joi.string().required().min(6).max(6).trim().strict(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   expiredAt: Joi.date().timestamp('javascript').default(Date.now() + 5* 6 *1000),
-  isActive: Joi.boolean().default(false),
+  isUsed: Joi.boolean().default(false),
 })
 
 const validateBeforeCreate = async (data) => {
@@ -34,11 +34,12 @@ const getOTP = async (data) => {
   }
 }
 
+
 const setActiveOTP = async (data) => {
   try {
     return await GET_DB().collection(OTP_COLLECTION_NAME).findOneAndUpdate(
       { email:data.email, otp: data.otp },
-      { $set: { 'isActive' : 'true' } }
+      { $set: { 'isUsed' : 'true' } }
     )
   } catch (error) {
     throw new Error(error)
