@@ -7,7 +7,7 @@ const USER_COLLECTION_SCHEMA = Joi.object({
   email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
   password: Joi.string().required().trim().strict(),
   displayName:Joi.string().required().trim().strict(),
-  avatar:Joi.string().trim().strict(),
+  avatar:Joi.string().trim().strict().default(null),
   admin: Joi.boolean().default(false),
   loginType: Joi.string().default(null),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
@@ -41,7 +41,15 @@ const findOneUserByEmail = async (email) => {
 const findOneUserById = async (id) => {
   try {
     return await GET_DB().collection(USER_COLLECTION_NAME).findOne(
-      { _id: new ObjectId(id) }
+      { _id: new ObjectId(id) },
+      { projection:
+        {
+          password: 0,
+          loginType: 0,
+          createdAt: 0,
+          admin: 0,
+        }
+      }
     )
   } catch (error) {
     throw new Error(error)
@@ -79,6 +87,7 @@ const updatePassword = async (email, password) => {
 
 
 export const userModel = {
+  USER_COLLECTION_NAME,
   createUser,
   findOneUserByEmail,
   findAllUsers,

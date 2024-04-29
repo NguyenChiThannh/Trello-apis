@@ -5,6 +5,8 @@ import { generateOTP, generateRandomString } from '~/utils/algorithms'
 
 const createOTP = async (email) => {
   try {
+    const user = await userModel.findOneUserByEmail(email)
+    if (!user) return 'EMAIL NOT FOUND'
     const otp = generateOTP()
     const data = {
       email,

@@ -7,8 +7,9 @@ const createOTP = async (req, res, next) => {
   try {
     const email = req.body.email
     const otp = await OTPService.createOTP(email)
+    if (otp == 'EMAIL NOT FOUND') return res.status(StatusCodes.NOT_FOUND).json({ message:otp })
     sendMail(GMAIL_TYPE.COMFIRM_OTP, undefined, otp, req.body.email )
-    res.status(StatusCodes.OK).json({ message: 'Send code via email' })
+    return res.status(StatusCodes.OK).json({ message: 'Send code via email' })
   } catch (error) {
     next(error)
   }

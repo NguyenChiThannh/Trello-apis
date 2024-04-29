@@ -59,15 +59,13 @@ const loginUser = async (req, res, next) => {
       sameSite:'strict',
     })
     // Trả về client
-    const filteredToken = { ...token }
-    delete filteredToken.password
-    delete filteredToken.refreshToken
-    delete filteredToken.admin
-    delete filteredToken.createdAt
-    delete filteredToken.loginType
-    delete filteredToken.accessToken
+    // eslint-disable-next-line no-unused-vars
+    const { password, loginType, createdAt, admin, accessToken, refreshToken, ...filterUser } = token
 
-    if (filteredToken.email) res.status(StatusCodes.OK).json(filteredToken)
+    if (filterUser.email)
+    {
+      res.status(StatusCodes.OK).json(filterUser)
+    }
     else res.status(StatusCodes.UNAUTHORIZED).json({ message: token })
   }
   catch (error) {
@@ -145,7 +143,7 @@ const loginSuccess = async (req, res, next) => {
   try {
     const user = await authService.findOneUserById(req.user.id)
     // eslint-disable-next-line no-unused-vars
-    const { password, loginType, createdAt, admin, ...filterUser } = user
+    const { admin, ...filterUser } = user
     return res.status(StatusCodes.OK).json(filterUser)
   }
   catch (error) {

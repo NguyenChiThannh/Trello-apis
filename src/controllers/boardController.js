@@ -34,10 +34,24 @@ const getDetails = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
+    const page = req.query.page
+    const userId = req.body.userId
+    //Điều hướng sang tầng Service
+    const boards = await boardService.getAll(userId, page)
+
+    // Có kết quả thì trả về phía Client
+    res.status(StatusCodes.OK).json(boards)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getCount = async (req, res, next) => {
+  try {
     //console.log('req.params:', req.params)
     const userId = req.body.userId
     //Điều hướng sang tầng Service
-    const boards = await boardService.getAll(userId)
+    const boards = await boardService.getCount(userId)
 
     // Có kết quả thì trả về phía Client
     res.status(StatusCodes.OK).json(boards)
@@ -78,4 +92,5 @@ export const boardController = {
   update,
   moveCardToDifferentColumn,
   getAll,
+  getCount
 }

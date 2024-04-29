@@ -32,7 +32,7 @@ const update = async (columnId, reqBody) => {
   try {
     const updateData = {
       ...reqBody,
-      updateAt: Date.now()
+      updatedAt: Date.now()
     }
     // Gọi tới tầng Model để sử lý bản ghi trong Database
     const updateColumn = await columnModel.update(columnId, updateData )

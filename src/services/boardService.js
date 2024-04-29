@@ -13,7 +13,6 @@ const createNew = async (reqBody) => {
       slug: slugify(reqBody.title)
     }
 
-    // Gọi tới tầng Model để sử lý bản ghi trong Database
     const createdBoard = await boardModel.createNew(newBoard)
     // Lấy bản ghi
     const getNewBoard = await boardModel.findOneById(createdBoard.insertedId)
@@ -28,7 +27,6 @@ const createNew = async (reqBody) => {
 const getDetails = async (boardId) => {
   try {
 
-    // Gọi tới tầng Model để sử lý bản ghi trong Database
     const board = await boardModel.getDetails(boardId)
     if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'board not found')}
@@ -42,18 +40,18 @@ const getDetails = async (boardId) => {
 
     delete resBoard.cards
 
-    // Luôn phải có return
     return resBoard
   } catch (error) {
     throw new Error(error)
   }
 }
 
-const getAll = async (userId) => {
+const getAll = async (userId, page) => {
   try {
-    // Gọi tới tầng Model để sử lý bản ghi trong Database
-    const boards = await boardModel.findAllByUserId(userId)
-    return boards
+    const skip = (page-1) * 8
+    const boards = await boardModel.findAllByUserId(userId, skip)
+    const count = await boardModel.countOfBoard(userId)
+    return { boards, count }
   } catch (error) {
     throw new Error(error)
   }
@@ -63,9 +61,8 @@ const update = async (boardId, reqBody) => {
   try {
     const updateData = {
       ...reqBody,
-      updateAt: Date.now()
+      updatedAt: Date.now()
     }
-    // Gọi tới tầng Model để sử lý bản ghi trong Database
     const updateBoard = await boardModel.update(boardId, updateData )
 
     // Luôn phải có return
@@ -81,12 +78,12 @@ const moveCardToDifferentColumn = async (reqBody) => {
   // Bước 1: Cập nhật mảng cardOrderIds của column ban đầu chứa nó (xóa cái _id của Card ra khỏi mảng)
     await columnModel.update(reqBody.prevColumnId, {
       cardOrderIds: reqBody.prevCardOrderIds,
-      updateAt: Date.now()
+      updatedAt: Date.now()
     })
     // Bước 2: Cập nhật mảng cardOrderIds của column tiếp theo ( thêm _id của Card vào mảng)
     await columnModel.update(reqBody.nextColumnId, {
       cardOrderIds: reqBody.nextCardOrderIds,
-      updateAt: Date.now()
+      updatedAt: Date.now()
     })
     // Bước 3: Cập nhật lại trường columnId mới của cái Card đã kéo
     await cardModel.update(reqBody.currentCardId, {
@@ -100,10 +97,20 @@ const moveCardToDifferentColumn = async (reqBody) => {
   }
 }
 
+const getCount = async (userId) => {
+  try {
+    const count = await boardModel.countOfBoard(userId)
+    return count
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const boardService = {
   createNew,
   getDetails,
   update,
   moveCardToDifferentColumn,
   getAll,
+  getCount,
 }

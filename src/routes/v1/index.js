@@ -6,12 +6,15 @@ import { cardRoute } from '~/routes/v1/cardRoute'
 import { authRoute } from '~/routes/v1/authRoute'
 import { userRoute } from './userRoute'
 import { otpRoute } from './OTPRoute'
+import { invitationModel } from '~/models/invitationModel'
 
 const Router = express.Router()
 
 Router.get('/status', (req, res) => {
   res.status(StatusCodes.OK).json({ message: 'Hello world' })
 })
+
+Router.post('/test', invitationModel.createNew)
 
 // Board api
 Router.use('/boards', boardRoute)
