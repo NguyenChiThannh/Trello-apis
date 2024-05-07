@@ -17,7 +17,6 @@ const createNew = async (reqBody) => {
     // Lấy bản ghi
     const getNewBoard = await boardModel.findOneById(createdBoard.insertedId)
 
-    // Luôn phải có return
     return getNewBoard
   } catch (error) {
     throw new Error(error)
@@ -65,7 +64,6 @@ const update = async (boardId, reqBody) => {
     }
     const updateBoard = await boardModel.update(boardId, updateData )
 
-    // Luôn phải có return
     return updateBoard
   } catch (error) {
     throw new Error(error)
@@ -105,6 +103,7 @@ const getCount = async (userId) => {
     throw new Error(error)
   }
 }
+
 
 export const boardService = {
   createNew,

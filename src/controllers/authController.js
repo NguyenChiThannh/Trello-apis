@@ -12,16 +12,10 @@ const createMagicLink = async (req, res, next) => {
   try {
     const user = await authService.findOneUserByEmail(req.body.email)
     if (user) res.status(StatusCodes.FORBIDDEN).json({ message: 'USER ALREADY EXISTS' })
-    const infoUserToken = jwt.sign({
-      email: req.body.email,
-      password: req.body.password
-    },
-    env.VERIFY_ACCOUNT_TOKEN,
-    { expiresIn:'600000' }
-    )
+    const infoUserToken = genarateToken.encryptInfo(req.body)
     const splitToken = infoUserToken.split('.')
     const magicLink = `${env.CLIENT_URI}/verify-account/${splitToken[0]}/${splitToken[1]}/${splitToken[2]}`
-    sendMail(GMAIL_TYPE.CONFIRM_GAMIL_ADDRESS, magicLink, undefined, req.body.email)
+    sendMail(GMAIL_TYPE.CONFIRM_GMAIL_ADDRESS, magicLink, undefined, req.body.email)
     res.status(StatusCodes.OK).json({ message: 'Send code via email' })
   }
   catch (error) {

@@ -15,14 +15,15 @@ const INVITATION_COLLECTION_SCHEMA = Joi.object({
 const validateBeforeCreate = async (data) => {
   return await INVITATION_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
-const createNew = async (req, res, next) => {
+const createNew = async (data) => {
   try {
-    const data = req.body
-    const validData = await GET_DB().collection(INVITATION_COLLECTION_NAME).insertOne({
-      userId: new ObjectId(data.userId),
-      boardId: new ObjectId(data.boardId)
+    const validData = await validateBeforeCreate(data)
+    //console.log(validData)
+    return await GET_DB().collection(INVITATION_COLLECTION_NAME).insertOne({
+      ...validData,
+      boardId:new ObjectId(validData.boardId),
+      userId:new ObjectId(validData.userId),
     })
-    res.status(200).send('Hello')
   } catch (error) {
     throw new Error(error)
   }

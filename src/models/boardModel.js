@@ -99,23 +99,21 @@ const getDetails = async (id) => {
         foreignField: 'boardId',
         as: 'cards'
       } },
-      {
-        $lookup: {
-          from: userModel.USER_COLLECTION_NAME,
-          localField: 'userId',
-          foreignField: '_id',
-          as: 'user'
-        }
-      },
+      { $lookup: {
+        from: userModel.USER_COLLECTION_NAME,
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user'
+      } },
       { $lookup: {
         from: invitationModel.INVITATION_COLLECTION_NAME,
         localField: '_id',
         foreignField: 'boardId',
-        as: 'userBoard'
+        as: 'memberBoard'
       } },
       { $lookup: {
         from: userModel.USER_COLLECTION_NAME,
-        localField: 'userBoard.userId',
+        localField: 'memberBoard.userId',
         foreignField: '_id',
         as: 'members'
       } },
@@ -151,21 +149,6 @@ const getDetails = async (id) => {
   }
 }
 
-// push một giá trị của columnId vào cuối mảng columnOrdewrIds
-const pushColumnOrderIds = async (column) => {
-  try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
-      { _id: new ObjectId(column.boardId) },
-      { $push: { columnOrderIds: new ObjectId(column._id) } },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
-    )
-
-    return result
-  }
-  catch (error) {
-    throw new Error(error)
-  }
-}
 
 // Lấy 1 phần tử ra khỏi
 const pullColumnOrderIds = async (column) => {
@@ -223,6 +206,38 @@ const countOfBoard = async (userId) => {
   }
 }
 
+// push một giá trị của columnId vào cuối mảng columnOrdewrIds
+const pushColumnOrderIds = async (column) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(column.boardId) },
+      { $push: { columnOrderIds: new ObjectId(column._id) } },
+      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+    )
+
+    return result
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+}
+
+
+const pushMemberIds = async (data) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(data.boardId) },
+      { $push: { memberIds: new ObjectId(data.userId) } },
+      { returnDocument: false },
+    )
+
+    return result
+  }
+  catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
@@ -234,4 +249,5 @@ export const boardModel = {
   update,
   findAllByUserId,
   countOfBoard,
+  pushMemberIds,
 }

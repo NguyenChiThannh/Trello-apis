@@ -13,11 +13,13 @@ import passportSetup from '~/config/passport'
 import session from 'express-session'
 // import { Redis } from 'ioredis'
 // import RedisStore from 'connect-redis'
+import http from 'http'
+import { Server } from 'socket.io'
+import { app, server } from './sockets/config'
 
 
 const START_SEVER = () => {
 
-  const app = express()
 
   // Redis
   // const clientRedis = new Redis()
@@ -49,7 +51,7 @@ const START_SEVER = () => {
   // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
 
-  app.listen( env.APP_PORT, env.APP_HOST, () => {
+  server.listen( env.APP_PORT, env.APP_HOST, () => {
     // eslint-disable-next-line no-console
     console.log(`3.I am  running at ${env.APP_HOST}:${env.APP_PORT}/`)
   })

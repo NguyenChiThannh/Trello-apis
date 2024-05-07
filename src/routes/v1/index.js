@@ -5,8 +5,9 @@ import { columnRoute } from '~/routes/v1/columnRoute'
 import { cardRoute } from '~/routes/v1/cardRoute'
 import { authRoute } from '~/routes/v1/authRoute'
 import { userRoute } from './userRoute'
+import { invitationRoute } from './invitationRoute'
 import { otpRoute } from './OTPRoute'
-import { invitationModel } from '~/models/invitationModel'
+import { messageRoute } from './messageRoute'
 
 const Router = express.Router()
 
@@ -14,7 +15,6 @@ Router.get('/status', (req, res) => {
   res.status(StatusCodes.OK).json({ message: 'Hello world' })
 })
 
-Router.post('/test', invitationModel.createNew)
 
 // Board api
 Router.use('/boards', boardRoute)
@@ -34,5 +34,10 @@ Router.use('/user', userRoute)
 // otp api
 Router.use('/otp', otpRoute)
 
+// invitation api
+Router.use('/invitations', invitationRoute)
+
+// message api
+Router.use('/messages', messageRoute)
 
 export const APIs_V1 = Router

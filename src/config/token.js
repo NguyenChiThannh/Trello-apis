@@ -21,7 +21,28 @@ const genarateRefreshToken = (user) => {
   )
 }
 
+const encryptInfo = (user) => {
+  return jwt.sign({
+    email: user.email,
+    password: user.password
+  },
+  env.VERIFY_ACCOUNT_TOKEN,
+  { expiresIn:'600000' })
+}
+
+const encryptInvitation = (userId, boardId) => {
+  return jwt.sign({
+    userId,
+    boardId
+  },
+  env.VERIFY_ACCOUNT_TOKEN,
+  { expiresIn:'600000' })
+}
+
+
 export const genarateToken = {
   genarateAccessToken,
   genarateRefreshToken,
+  encryptInfo,
+  encryptInvitation,
 }

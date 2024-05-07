@@ -1,5 +1,5 @@
 export const GMAIL_TYPE = {
-  CONFIRM_GAMIL_ADDRESS: {
+  CONFIRM_GMAIL_ADDRESS: {
     subject: 'Confirm your email address',
     title: 'Confirm your email address',
     content: 'Click link to confirm email'
@@ -13,6 +13,13 @@ export const GMAIL_TYPE = {
     subject: 'Reset password',
     title: 'Reset password',
     content: 'We received a request to reset the password for your account. Here is your new password:'
+  },
+  INVITE_BOARD:(ownerName, boardTitle) => {
+    return {
+      subject: `${ownerName} has invited you to their ${boardTitle}`,
+      title: `${ownerName} has invited you to their ${boardTitle}`,
+      content: 'Join them on Trello to collaborate, manage projects, and reach new productivity peaks.'
+    }
   },
 
 }
