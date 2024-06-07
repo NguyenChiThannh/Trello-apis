@@ -4,11 +4,11 @@ import { messageService } from '~/services/messageService'
 const sendMessages = async (req, res, next) => {
   try {
     const message = req.body.message
-    const boardId = req.boby.boardId
-    const receiverId = req.params.id
+    const boardId = req.params.boardId
+    const receiverId = req.params.receiverId
     const senderId = req.user.id
     const newMessage = await messageService.sendMessages(senderId, receiverId, message, boardId)
-    res.status(StatusCodes.OK).json(newMessage)
+    return res.status(StatusCodes.OK).json(newMessage)
   } catch (error) {
     next(error)
   }
@@ -20,7 +20,7 @@ const getMessages = async (req, res, next) => {
     const senderId = req.user.id
     const boardId = req.params.boardId
     const conversation = await messageService.getMessages(senderId, receiverId, boardId)
-    res.status(StatusCodes.OK).json(conversation)
+    return res.status(StatusCodes.OK).json(conversation)
   } catch (error) {
     next(error)
   }

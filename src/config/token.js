@@ -17,7 +17,7 @@ const genarateRefreshToken = (user) => {
     admin: user.admin
   },
   env.JWT_REFRESH_TOKEN,
-  { expiresIn:'100d' }
+  { expiresIn:'150d' }
   )
 }
 

@@ -13,7 +13,7 @@ const createNew = async (req, res, next) => {
   try {
     // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-    // Validate dữ liệu xong thì sang controller
+
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))

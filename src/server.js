@@ -14,7 +14,6 @@ import session from 'express-session'
 // import { Redis } from 'ioredis'
 // import RedisStore from 'connect-redis'
 import http from 'http'
-import { Server } from 'socket.io'
 import { app, server } from './sockets/config'
 
 

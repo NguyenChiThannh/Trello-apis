@@ -2,19 +2,16 @@ import jwt from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
 import passport from 'passport'
+import { boardModel } from '~/models/boardModel'
 
 const verifyToken = async (req, res, next) => {
   const accessToken = req.cookies?.accessToken
   if (accessToken) {
     jwt.verify(accessToken, env.JWT_ACCESS_TOKEN, (err, user) => {
       if (err) {
-        return res.status(StatusCodes.FORBIDDEN).json({ message: 'Token is not valid' })
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Token is not valid' })
       }
       req.user = user
-      req.body = {
-        ...req.body,
-        userId: user.id,
-      }
       next()
     })
   }
@@ -30,7 +27,7 @@ const verifyTokenAndAminAuth = (req, res, next) => {
       next()
     }
     else {
-      res.status(StatusCodes.UNAUTHORIZED).json({ message: 'You are not authenicated' })
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'You are not authenicated' })
     }
   })
 }
@@ -59,10 +56,30 @@ const loginWithThirdParty = (req, res, next) => {
   })(req, res, next)
 }
 
+const checkBoardPermissions = (req, res, next) => {
+  const boardId = req.body.boardId || req.query.boardId || req.params.boardId
+  verifyToken(req, res, async () => {
+    const board = await boardModel.getDetails(boardId)
+    if (!board) {
+      return res.status(404).json({ message: 'Board not found' })
+    }
+    const userId = req.user.id
+    // Check if the user is the owner or a member of the board
+    const isOwner = board.userId.toString() === userId.toString()
+    const isMember = board.memberIds.some(memberId => memberId.toString() === userId.toString())
+
+    if (isOwner || isMember) {
+      next()
+    } else {
+      return res.status(StatusCodes.FORBIDDEN).json({ message: 'YOU DO NOT HAVE PERMISSION TO PERFORM THIS ACTION' })
+    }
+  })
+}
 
 export const verifyMiddleware = {
   verifyToken,
   verifyTokenAndAminAuth,
   confirmEmail,
-  loginWithThirdParty
+  loginWithThirdParty,
+  checkBoardPermissions,
 }

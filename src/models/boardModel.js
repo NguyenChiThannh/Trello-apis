@@ -8,7 +8,6 @@ import { columnModel } from '~/models/columnModel'
 import { userModel } from './userModel'
 import { invitationModel } from './invitationModel'
 
-// Define Collection (name & schema)
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required().min(3).max(50).trim().strict(),
@@ -38,9 +37,7 @@ const validateBeforeCreate = async (data) => {
 
 const createNew = async (data) => {
   try {
-    //console.log(data)
     const validData = await validateBeforeCreate(data)
-    //console.log(validData)
     return await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne({
       ...validData,
       userId: new ObjectId(validData.userId)
@@ -156,7 +153,7 @@ const pullColumnOrderIds = async (column) => {
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(column.boardId) },
       { $pull: { columnOrderIds: new ObjectId(column._id) } },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+      { returnDocument: 'after' },
     )
 
     return result
@@ -174,7 +171,6 @@ const update = async (boardId, updateData) => {
       }
     })
 
-    // Đối với những dữ liệu lên quan tới ObjectId, biến đổi ở đây
     if (updateData.columnOrderIds) {
       updateData.columnOrderIds = updateData.columnOrderIds.map(_id => (new ObjectId(_id)))
     }
@@ -182,7 +178,7 @@ const update = async (boardId, updateData) => {
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(boardId) },
       { $set: updateData },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+      { returnDocument: 'after' },
     )
 
     return result
@@ -209,13 +205,11 @@ const countOfBoard = async (userId) => {
 // push một giá trị của columnId vào cuối mảng columnOrdewrIds
 const pushColumnOrderIds = async (column) => {
   try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(column.boardId) },
       { $push: { columnOrderIds: new ObjectId(column._id) } },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+      { returnDocument: 'after' },
     )
-
-    return result
   }
   catch (error) {
     throw new Error(error)
@@ -225,13 +219,11 @@ const pushColumnOrderIds = async (column) => {
 
 const pushMemberIds = async (data) => {
   try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(data.boardId) },
       { $push: { memberIds: new ObjectId(data.userId) } },
       { returnDocument: false },
     )
-
-    return result
   }
   catch (error) {
     throw new Error(error)

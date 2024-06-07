@@ -5,19 +5,15 @@ import { cardModel } from '~/models/cardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
-const createNew = async (reqBody) => {
+const createNew = async (reqBody, userId) => {
   try {
-    // Xử lý logic
     const newBoard = {
       ...reqBody,
+      userId,
       slug: slugify(reqBody.title)
     }
-
     const createdBoard = await boardModel.createNew(newBoard)
-    // Lấy bản ghi
-    const getNewBoard = await boardModel.findOneById(createdBoard.insertedId)
-
-    return getNewBoard
+    return await boardModel.findOneById(createdBoard.insertedId) // New board
   } catch (error) {
     throw new Error(error)
   }
@@ -38,7 +34,6 @@ const getDetails = async (boardId) => {
     })
 
     delete resBoard.cards
-
     return resBoard
   } catch (error) {
     throw new Error(error)
@@ -88,7 +83,6 @@ const moveCardToDifferentColumn = async (reqBody) => {
       columnId : reqBody.nextColumnId,
 
     } )
-    // Luôn phải có return
     return { updateResult: 'Successful!' }
   } catch (error) {
     throw new Error(error)
@@ -97,8 +91,7 @@ const moveCardToDifferentColumn = async (reqBody) => {
 
 const getCount = async (userId) => {
   try {
-    const count = await boardModel.countOfBoard(userId)
-    return count
+    return await boardModel.countOfBoard(userId) // count
   } catch (error) {
     throw new Error(error)
   }

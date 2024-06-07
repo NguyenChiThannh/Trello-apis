@@ -18,7 +18,8 @@ const CONVERSATION_COLLECTION_SCHEMA = Joi.object({
 const createNew = async (senderId, receiverId, boardId) => {
   try {
     const newConversation = await GET_DB().collection(CONVERSATION_COLLECTION_NAME).insertOne({
-      participants: [new ObjectId(senderId), new ObjectId(receiverId), new ObjectId(boardId)],
+      boardId: new ObjectId(boardId),
+      participants: [new ObjectId(senderId), new ObjectId(receiverId)],
     })
     return newConversation
   } catch (error) {
@@ -29,8 +30,9 @@ const createNew = async (senderId, receiverId, boardId) => {
 const findOne = async (senderId, receiverId, boardId) => {
   try {
     const conversation = await GET_DB().collection(CONVERSATION_COLLECTION_NAME).findOne({
+      boardId: new ObjectId(boardId),
       participants:{
-        $all: [new ObjectId(senderId), new ObjectId(receiverId), new ObjectId(boardId)]
+        $all: [new ObjectId(senderId), new ObjectId(receiverId)]
       }
     })
     return conversation
@@ -42,8 +44,9 @@ const findOne = async (senderId, receiverId, boardId) => {
 const pushMessageId = async (senderId, receiverId, newMessage, boardId) => {
   return await GET_DB().collection(CONVERSATION_COLLECTION_NAME).findOneAndUpdate(
     {
+      boardId: new ObjectId(boardId),
       participants:{
-        $all: [new ObjectId(senderId), new ObjectId(receiverId), new ObjectId(boardId)]
+        $all: [new ObjectId(senderId), new ObjectId(receiverId)]
       }
     },
     { $push: { messageIds: new ObjectId(newMessage._id) } },
@@ -54,14 +57,14 @@ const pushMessageId = async (senderId, receiverId, newMessage, boardId) => {
 const getDetail = async (senderId, receiverId, boardId) => {
   return await GET_DB().collection(CONVERSATION_COLLECTION_NAME).aggregate([
     { $match: {
+      boardId: new ObjectId(boardId),
       participants:{
-        $all: [new ObjectId(senderId), new ObjectId(receiverId), new ObjectId(boardId)]
+        $all: [new ObjectId(senderId), new ObjectId(receiverId)]
       }
     } },
     {
       $unwind: '$messageIds'
     },
-    // // Lookup stage to join with messages collection
     {
       $lookup: {
         from: messageModel.MESSAGE_COLLECTION_NAME,
@@ -70,7 +73,6 @@ const getDetail = async (senderId, receiverId, boardId) => {
         as: 'messages'
       }
     },
-    // Group stage to reshape the data if needed
     {
       $group: {
         _id: '$_id',

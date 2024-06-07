@@ -2,17 +2,9 @@ import { StatusCodes } from 'http-status-codes'
 import { boardService } from '~/services/boardService'
 const createNew = async (req, res, next) => {
   try {
-    // console.log('req.body:', req.body)
-    // console.log('req.query:', req.query)
-    // console.log('req.params:', req.params)
-    // console.log('req.cookies:', req.cookies)
-    // console.log('req.jwtDecoded:', req.jwtDecoded)
+    const createBoard = await boardService.createNew(req.body, req.user.id)
 
-    //Điều hướng sang tầng Service
-    const createBoard = await boardService.createNew(req.body)
-
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.CREATED).json(createBoard)
+    return res.status(StatusCodes.CREATED).json(createBoard)
   } catch (error) {
     next(error)
   }
@@ -20,13 +12,10 @@ const createNew = async (req, res, next) => {
 
 const getDetails = async (req, res, next) => {
   try {
-    //console.log('req.params:', req.params)
-    const boardId = req.params.id
-    //Điều hướng sang tầng Service
+    const boardId = req.params.boardId
     const board = await boardService.getDetails(boardId)
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.OK).json(board)
+    return res.status(StatusCodes.OK).json(board)
   } catch (error) {
     next(error)
   }
@@ -35,12 +24,10 @@ const getDetails = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const page = req.query.page
-    const userId = req.body.userId
-    //Điều hướng sang tầng Service
+    const userId = req.user.id
     const boards = await boardService.getAll(userId, page)
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.OK).json(boards)
+    return res.status(StatusCodes.OK).json(boards)
   } catch (error) {
     next(error)
   }
@@ -48,13 +35,10 @@ const getAll = async (req, res, next) => {
 
 const getCount = async (req, res, next) => {
   try {
-    //console.log('req.params:', req.params)
-    const userId = req.body.userId
-    //Điều hướng sang tầng Service
+    const userId = req.user.id
     const boards = await boardService.getCount(userId)
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.OK).json(boards)
+    return res.status(StatusCodes.OK).json(boards)
   } catch (error) {
     next(error)
   }
@@ -62,13 +46,10 @@ const getCount = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    //console.log('req.params:', req.params)
-    const boardId = req.params.id
-    //Điều hướng sang tầng Service
+    const boardId = req.params.boardId
     const updateBoard = await boardService.update(boardId, req.body)
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.OK).json(updateBoard)
+    return res.status(StatusCodes.OK).json(updateBoard)
   } catch (error) {
     next(error)
   }
@@ -76,11 +57,9 @@ const update = async (req, res, next) => {
 
 const moveCardToDifferentColumn = async (req, res, next) => {
   try {
-    //Điều hướng sang tầng Service
     const result = await boardService.moveCardToDifferentColumn(req.body)
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.OK).json(result)
+    return res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)
   }

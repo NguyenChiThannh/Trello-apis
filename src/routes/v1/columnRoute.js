@@ -2,12 +2,13 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { columnValidation } from '~/validations/columnValidation'
 import { columnController } from '~/controllers/columnController'
+import { verifyMiddleware } from '~/middlewares/verifyMiddleware'
 
 const Router = express.Router()
 
 Router.route('/')
-  .post(columnValidation.createNew, columnController.createNew)
+  .post(verifyMiddleware.checkBoardPermissions, columnValidation.createNew, columnController.createNew)
 Router.route('/:id')
-  .put(columnValidation.update, columnController.update)
-  .delete(columnValidation.deleteById, columnController.deleteById)
+  .put(verifyMiddleware.checkBoardPermissions, columnValidation.update, columnController.update)
+  .delete(verifyMiddleware.checkBoardPermissions, columnValidation.deleteById, columnController.deleteById)
 export const columnRoute = Router

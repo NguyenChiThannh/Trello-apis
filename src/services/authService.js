@@ -15,9 +15,9 @@ const registerUser = async (reqBody) => {
       email: reqBody.email,
       password: hashed,
       displayName: reqBody.email.match(/^(.*?)@/)[1],
+      avatar: `https://ui-avatars.com/api/?name=${reqBody.email.match(/^(.*?)@/)[1]}&length=1`
     }
-    const createUser = await userModel.createUser(newUser)
-    return createUser
+    return await userModel.createUser(newUser)
   }
   catch (error) {
     throw new Error(error)
@@ -82,8 +82,7 @@ const logoutUser = async (refreshToken) => {
 
 const findOneUserByEmail = async (email) => {
   try {
-    const user = userModel.findOneUserByEmail(email)
-    return user
+    return await userModel.findOneUserByEmail(email)
   } catch (error) {
     throw new Error(error)
   }
@@ -91,8 +90,7 @@ const findOneUserByEmail = async (email) => {
 
 const findOneUserById = async (id) => {
   try {
-    const user = userModel.findOneUserById(id)
-    return user
+    return await userModel.findOneUserById(id)
   } catch (error) {
     throw new Error(error)
   }

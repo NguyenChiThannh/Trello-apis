@@ -66,7 +66,7 @@ const pushCardOrderIds = async (card) => {
     const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(card.columnId) },
       { $push: { cardOrderIds: new ObjectId(card._id) } },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+      { returnDocument: 'after' },
     )
     return result
   }
@@ -82,7 +82,7 @@ const update = async (columnId, updateData) => {
         delete updateData[fieldName]
       }
     })
-    // Đối với những dữ liệu lên quan tới ObjectId, biến đổi ở đây
+
     if (updateData.cardOrderIds) {
       updateData.cardOrderIds = updateData.cardOrderIds.map(_id => (new ObjectId(_id)))
     }
@@ -90,7 +90,7 @@ const update = async (columnId, updateData) => {
     const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(columnId) },
       { $set: updateData },
-      { returnDocument: 'after' }, // Trả về bản ghi đã được cập nhật, Nếu không có thì trả về bản ghi cũ
+      { returnDocument: 'after' },
     )
 
     return result

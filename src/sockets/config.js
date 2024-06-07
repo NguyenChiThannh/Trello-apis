@@ -20,7 +20,6 @@ export const getReceiverSocketId = (receiverId) => {
 io.on('connection', (socket) => {
   // eslint-disable-next-line no-console
   console.log('🚀 ~ io.on ~ a user socket connected:', socket.id)
-
   const userId = socket.handshake.query.userId
   if (userId != 'undefined') userSocketMap[userId] = socket.id
 

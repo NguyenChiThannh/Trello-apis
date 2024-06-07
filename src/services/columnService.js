@@ -34,11 +34,7 @@ const update = async (columnId, reqBody) => {
       ...reqBody,
       updatedAt: Date.now()
     }
-    // Gọi tới tầng Model để sử lý bản ghi trong Database
-    const updateColumn = await columnModel.update(columnId, updateData )
-
-    // Luôn phải có return
-    return updateColumn
+    return await columnModel.update(columnId, updateData )
   } catch (error) {
     throw new Error(error)
   }

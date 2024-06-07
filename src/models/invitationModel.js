@@ -18,7 +18,6 @@ const validateBeforeCreate = async (data) => {
 const createNew = async (data) => {
   try {
     const validData = await validateBeforeCreate(data)
-    //console.log(validData)
     return await GET_DB().collection(INVITATION_COLLECTION_NAME).insertOne({
       ...validData,
       boardId:new ObjectId(validData.boardId),

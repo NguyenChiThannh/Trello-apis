@@ -8,7 +8,7 @@ const MESSAGE_COLLECTION_SCHEMA = Joi.object({
   senderId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   receiverId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   boardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-  message: Joi.string().required().min(3).max(256).trim().strict(),
+  message: Joi.string().required().max(256).trim().strict(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
 })
 

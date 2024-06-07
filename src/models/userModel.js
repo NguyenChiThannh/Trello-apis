@@ -21,7 +21,6 @@ const validateBeforeCreate = async (data) => {
 const createUser = async (newUser) => {
   try {
     const validData = await validateBeforeCreate(newUser)
-    //console.log('🚀 ~ createUser ~ validData:', validData)
     return await GET_DB().collection(USER_COLLECTION_NAME).insertOne(validData)
   } catch (error) {
     throw new Error(error)
@@ -85,6 +84,26 @@ const updatePassword = async (email, password) => {
   }
 }
 
+const updateInfo = async (id, updateFields ) => {
+  try {
+    const result = await GET_DB().collection(USER_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updateFields },
+      { projection:
+        {
+          password: 0,
+          loginType: 0,
+          createdAt: 0,
+          admin: 0,
+        },
+      returnDocument: 'after' }
+    )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 
 export const userModel = {
   USER_COLLECTION_NAME,
@@ -93,5 +112,6 @@ export const userModel = {
   findAllUsers,
   deleteUser,
   findOneUserById,
-  updatePassword
+  updatePassword,
+  updateInfo,
 }

@@ -3,11 +3,46 @@ import { cardService } from '~/services/cardService'
 
 const createNew = async (req, res, next) => {
   try {
-    //Điều hướng sang tầng Service
     const createCard = await cardService.createNew(req.body)
+    return res.status(StatusCodes.CREATED).json(createCard)
+  } catch (error) {
+    next(error)
+  }
+}
 
-    // Có kết quả thì trả về phía Client
-    res.status(StatusCodes.CREATED).json(createCard)
+const updateCover = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      next(new Error('No file uploaded!'))
+      return
+    }
+    await cardService.updateCover(req.body.cardId, req.file.path)
+    return res.status(StatusCodes.OK).json({ message: 'Update Successful' })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const updateDescription = async (req, res, next) => {
+  try {
+    await cardService.updateDescription(req.body.cardId, req.body.description)
+    return res.status(StatusCodes.OK).json({ message: 'Update Successful' })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const addComment = async (req, res, next) => {
+  try {
+    const comment = {
+      userId: req.user.id,
+      userDisplayName: req.body.displayName,
+      userAvatar: req.body.avatar,
+      content: req.body.content
+    }
+    const cardId = req.body.cardId
+    const result = await cardService.addComment(cardId, comment)
+    return res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)
   }
@@ -15,4 +50,7 @@ const createNew = async (req, res, next) => {
 
 export const cardController = {
   createNew,
+  updateCover,
+  updateDescription,
+  addComment,
 }

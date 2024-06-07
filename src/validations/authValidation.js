@@ -5,13 +5,11 @@ import ApiError from '~/utils/ApiError'
 const registerUser = async (req, res, next) => {
   const correctCondition = Joi.object({
     email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
-    //password: Joi.string().required().trim().strict(),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
+    password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{6,30}$')).required()
   })
   try {
     // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-    // Validate dữ liệu xong thì sang controller
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
@@ -21,13 +19,10 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   const correctCondition = Joi.object({
     email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'vn'] } }),
-    //password: Joi.string().required().trim().strict(),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
+    password: Joi.string().pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{6,30}$')).required()
   })
   try {
-    // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-    // Validate dữ liệu xong thì sang controller
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))

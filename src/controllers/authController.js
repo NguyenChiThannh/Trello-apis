@@ -2,7 +2,6 @@ import { authService } from '~/services/authService'
 import { StatusCodes } from 'http-status-codes'
 import { sendMail } from '~/mail/sendMail'
 import { genarateToken } from '~/config/token'
-import jwt from 'jsonwebtoken'
 import { env } from '~/config/environment'
 import { GMAIL_TYPE } from '~/mail/gmailType'
 import { sendSMS } from '~/mail/sendToTelephone'
@@ -16,7 +15,8 @@ const createMagicLink = async (req, res, next) => {
     const splitToken = infoUserToken.split('.')
     const magicLink = `${env.CLIENT_URI}/verify-account/${splitToken[0]}/${splitToken[1]}/${splitToken[2]}`
     sendMail(GMAIL_TYPE.CONFIRM_GMAIL_ADDRESS, magicLink, undefined, req.body.email)
-    res.status(StatusCodes.OK).json({ message: 'Send code via email' })
+
+    return res.status(StatusCodes.OK).json({ message: 'Send code via email' })
   }
   catch (error) {
     next(error)
@@ -29,6 +29,7 @@ const confirmEmail = async (req, res, next) => {
     if (createdUser == 'USER ALREADY EXISTS') {
       return res.status(StatusCodes.FORBIDDEN).json({ message: createdUser })
     }
+
     return res.status(StatusCodes.OK).json({ message: 'Confirm successful' })
   } catch (error) {
     next(error)
@@ -37,30 +38,27 @@ const confirmEmail = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   try {
-    // Điều hướng qua tầng Service
     const token = await authService.loginUser(req.body)
-    // res.cookie('accessToken', token.accessToken)
     res.cookie('accessToken', token.accessToken, {
       httpOnly:true,
       secure:true,
-      // path:'/',
+      path:'/',
       sameSite:'strict',
     })
     res.cookie('refreshToken', token.refreshToken, {
       httpOnly:true,
       secure:true,
-      // path:'/',
+      path:'/',
       sameSite:'strict',
     })
-    // Trả về client
     // eslint-disable-next-line no-unused-vars
     const { password, loginType, createdAt, admin, accessToken, refreshToken, ...filterUser } = token
 
     if (filterUser.email)
     {
-      res.status(StatusCodes.OK).json(filterUser)
+      return res.status(StatusCodes.OK).json(filterUser)
     }
-    else res.status(StatusCodes.UNAUTHORIZED).json({ message: token })
+    else return res.status(StatusCodes.UNAUTHORIZED).json({ message: token })
   }
   catch (error) {
     next(error)
@@ -69,26 +67,25 @@ const loginUser = async (req, res, next) => {
 
 const requestRefreshToken = async(req, res, next) => {
   try {
-    // Take refresh token from user
     const refreshToken = req.cookies?.refreshToken
     const token = await authService.requestRefreshToken(refreshToken)
     if (token) {
-      res.cookie('accessToken', token.accessToken, {
+      res.cookie('accessToken', token.newAccessToken, {
         httpOnly:true,
-        secure:false,
+        secure:true,
         path:'/',
         sameSite:'strict',
       })
-      res.cookie('refreshToken', token.refreshToken, {
+      res.cookie('refreshToken', token.newRefreshToken, {
         httpOnly:true,
-        secure:false,
+        secure:true,
         path:'/',
         sameSite:'strict',
       })
-      res.status(StatusCodes.OK).json(token.newAccessToken)
+      return res.status(StatusCodes.OK).json({ message: 'Request token successful' })
     }
     else {
-      res.status(StatusCodes.FORBIDDEN).json({ message: 'Token not valid' })
+      return res.status(StatusCodes.FORBIDDEN).json({ message: 'Token not valid' })
     }
   } catch (error) {
     next(error)
@@ -101,8 +98,8 @@ const logoutUser = async (req, res, next) => {
     authService.logoutUser(refreshToken)
     res.clearCookie('refreshToken')
     res.clearCookie('accessToken')
-    // Trả về client
-    res.status(StatusCodes.OK).json({ message: 'Logout successful' })
+
+    return res.status(StatusCodes.OK).json({ message: 'Logout successful' })
   }
   catch (error) {
     next(error)
@@ -112,22 +109,22 @@ const logoutUser = async (req, res, next) => {
 const loginWithThirdParty = async (req, res, next) => {
   try {
     const user = await authService.findOneUserByEmail(req.user._json.email)
-
     const accessToken = genarateToken.genarateAccessToken(user)
     const refreshToken = genarateToken.genarateRefreshToken(user)
     res.cookie('accessToken', accessToken, {
       httpOnly:true,
-      secure:false,
+      secure:true,
       path:'/',
       sameSite:'strict',
     })
     res.cookie('refreshToken', refreshToken, {
       httpOnly:true,
-      secure:false,
+      secure:true,
       path:'/',
       sameSite:'strict',
     })
-    res.redirect(`${env.CLIENT_URI}/login-success`)
+
+    return res.redirect(`${env.CLIENT_URI}/login-success`)
   }
   catch (error) {
     next(error)
@@ -138,6 +135,7 @@ const loginSuccess = async (req, res, next) => {
     const user = await authService.findOneUserById(req.user.id)
     // eslint-disable-next-line no-unused-vars
     const { admin, ...filterUser } = user
+
     return res.status(StatusCodes.OK).json(filterUser)
   }
   catch (error) {

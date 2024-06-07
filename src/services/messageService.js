@@ -7,7 +7,7 @@ const sendMessages = async (senderId, receiverId, message, boardId) => {
     let conversation = await conversationModel.findOne(senderId, receiverId, boardId)
     if (!conversation) conversation = await conversationModel.createNew(senderId, receiverId, boardId)
 
-    const createdNewMessage = await messageModel.createNew({ senderId, receiverId, message, boardId})
+    const createdNewMessage = await messageModel.createNew({ senderId, receiverId, message, boardId })
     const newMessage = await messageModel.findOneById(createdNewMessage.insertedId)
     if (newMessage) await conversationModel.pushMessageId(senderId, receiverId, newMessage, boardId)
 
@@ -24,7 +24,6 @@ const sendMessages = async (senderId, receiverId, message, boardId) => {
 
 const getMessages = async (senderId, receiverId, boardId) => {
   try {
-    // = await conversationModel.findOne(receiverId, senderId)
     return await conversationModel.getDetail(senderId, receiverId, boardId)
   } catch (error) {
     throw new Error(error)

@@ -23,7 +23,7 @@ const verifyOTP = async (req, res, next) => {
       sendMail(GMAIL_TYPE.NEW_PASSWORD, undefined, result, data?.email)
       return res.status(StatusCodes.OK).json({ message: 'Reset password successful' })
     }
-    res.status(StatusCodes.FORBIDDEN).json({ message: 'OTP has expired or has been used' })
+    return res.status(StatusCodes.FORBIDDEN).json({ message: 'OTP has expired or has been used' })
   } catch (error) {
     next(error)
   }

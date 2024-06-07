@@ -12,7 +12,6 @@ const createNew = async (req, res, next) => {
   try {
     // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.body, { abortEarly: false })
-    // Validate dữ liệu xong thì sang controller
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
@@ -28,12 +27,10 @@ const update = async (req, res, next) => {
     )
   })
   try {
-    // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.body, {
       abortEarly: false,
       allowUnknown: true, // Đối với trường hợp update, cho phép Unknown để không cần đẩy lên 1 số field lên
     })
-    // Validate dữ liệu xong thì sang controller
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
@@ -45,10 +42,8 @@ const deleteById = async (req, res, next) => {
     id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   })
   try {
-    // set abortEarly: false => Có nhiều lỗi để nó trả về tất cả lỗi
     await correctCondition.validateAsync(req.params)
     next()
-    // Validate dữ liệu xong thì sang controller
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
   }
