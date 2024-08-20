@@ -7,7 +7,7 @@ const genarateAccessToken = (user) => {
     admin: user.admin
   },
   env.JWT_ACCESS_TOKEN,
-  { expiresIn:'100d' }
+  { expiresIn: '1h' }
   )
 }
 

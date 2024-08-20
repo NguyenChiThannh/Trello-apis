@@ -9,7 +9,7 @@ const verifyToken = async (req, res, next) => {
   if (accessToken) {
     jwt.verify(accessToken, env.JWT_ACCESS_TOKEN, (err, user) => {
       if (err) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Token is not valid' })
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: err.message })
       }
       req.user = user
       next()
