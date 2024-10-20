@@ -6,8 +6,8 @@ const genarateAccessToken = (user) => {
     id: user._id ? user._id.toString() : user.id.toString(),
     admin: user.admin
   },
-  env.JWT_ACCESS_TOKEN,
-  { expiresIn: '1h' }
+    env.JWT_ACCESS_TOKEN,
+    { expiresIn: '30000' }
   )
 }
 
@@ -16,8 +16,8 @@ const genarateRefreshToken = (user) => {
     id: user._id ? user._id.toString() : user.id.toString(),
     admin: user.admin
   },
-  env.JWT_REFRESH_TOKEN,
-  { expiresIn:'150d' }
+    env.JWT_REFRESH_TOKEN,
+    { expiresIn: '150d' }
   )
 }
 
@@ -26,8 +26,8 @@ const encryptInfo = (user) => {
     email: user.email,
     password: user.password
   },
-  env.VERIFY_ACCOUNT_TOKEN,
-  { expiresIn:'600000' })
+    env.VERIFY_ACCOUNT_TOKEN,
+    { expiresIn: '600000' })
 }
 
 const encryptInvitation = (userId, boardId) => {
@@ -35,8 +35,8 @@ const encryptInvitation = (userId, boardId) => {
     userId,
     boardId
   },
-  env.VERIFY_ACCOUNT_TOKEN,
-  { expiresIn:'600000' })
+    env.VERIFY_ACCOUNT_TOKEN,
+    { expiresIn: '600000' })
 }
 
 

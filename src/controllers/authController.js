@@ -40,22 +40,21 @@ const loginUser = async (req, res, next) => {
   try {
     const token = await authService.loginUser(req.body)
     res.cookie('accessToken', token.accessToken, {
-      httpOnly:true,
-      secure:true,
-      path:'/',
-      sameSite:'strict',
+      httpOnly: true,
+      secure: true,
+      path: '/',
+      sameSite: 'strict',
     })
     res.cookie('refreshToken', token.refreshToken, {
-      httpOnly:true,
-      secure:true,
-      path:'/',
-      sameSite:'strict',
+      httpOnly: true,
+      secure: true,
+      path: '/',
+      sameSite: 'strict',
     })
     // eslint-disable-next-line no-unused-vars
     const { password, loginType, createdAt, admin, accessToken, refreshToken, ...filterUser } = token
 
-    if (filterUser.email)
-    {
+    if (filterUser.email) {
       return res.status(StatusCodes.OK).json(filterUser)
     }
     else return res.status(StatusCodes.UNAUTHORIZED).json({ message: token })
@@ -65,22 +64,22 @@ const loginUser = async (req, res, next) => {
   }
 }
 
-const requestRefreshToken = async(req, res, next) => {
+const requestRefreshToken = async (req, res, next) => {
   try {
     const refreshToken = req.cookies?.refreshToken
     const token = await authService.requestRefreshToken(refreshToken)
     if (token) {
       res.cookie('accessToken', token.newAccessToken, {
-        httpOnly:true,
-        secure:true,
-        path:'/',
-        sameSite:'strict',
+        httpOnly: true,
+        secure: true,
+        path: '/',
+        sameSite: 'strict',
       })
       res.cookie('refreshToken', token.newRefreshToken, {
-        httpOnly:true,
-        secure:true,
-        path:'/',
-        sameSite:'strict',
+        httpOnly: true,
+        secure: true,
+        path: '/',
+        sameSite: 'strict',
       })
       return res.status(StatusCodes.OK).json({ message: 'Request token successful' })
     }
@@ -112,16 +111,16 @@ const loginWithThirdParty = async (req, res, next) => {
     const accessToken = genarateToken.genarateAccessToken(user)
     const refreshToken = genarateToken.genarateRefreshToken(user)
     res.cookie('accessToken', accessToken, {
-      httpOnly:true,
-      secure:true,
-      path:'/',
-      sameSite:'strict',
+      httpOnly: true,
+      secure: true,
+      path: '/',
+      sameSite: 'strict',
     })
     res.cookie('refreshToken', refreshToken, {
-      httpOnly:true,
-      secure:true,
-      path:'/',
-      sameSite:'strict',
+      httpOnly: true,
+      secure: true,
+      path: '/',
+      sameSite: 'strict',
     })
 
     return res.redirect(`${env.CLIENT_URI}/login-success`)

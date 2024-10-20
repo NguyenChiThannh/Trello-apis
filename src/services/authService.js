@@ -40,7 +40,8 @@ const loginUser = async (reqBody) => {
       return {
         ...user,
         accessToken,
-        refreshToken }
+        refreshToken
+      }
     }
   }
   catch (error) {
@@ -50,9 +51,10 @@ const loginUser = async (reqBody) => {
 
 const requestRefreshToken = async (refreshToken) => {
   try {
-    if (!refreshTokens.includes(refreshToken)) {
-      return null
-    }
+    // console.log('🚀 ~ requestRefreshToken ~ refreshTokens:', refreshTokens)
+    // if (!refreshTokens.includes(refreshToken)) {
+    //   return null
+    // }
     return jwt.verify(refreshToken, env.JWT_REFRESH_TOKEN, (err, user) => {
       if (err) {
         throw new Error(err)

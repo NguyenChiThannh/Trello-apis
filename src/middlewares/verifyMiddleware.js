@@ -6,10 +6,14 @@ import { boardModel } from '~/models/boardModel'
 
 const verifyToken = async (req, res, next) => {
   const accessToken = req.cookies?.accessToken
+  console.log('🚀 ~ verifyToken ~ accessToken:', accessToken)
   if (accessToken) {
     jwt.verify(accessToken, env.JWT_ACCESS_TOKEN, (err, user) => {
       if (err) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({ message: err.message })
+        if (err.message?.includes('jwt expired')) {
+          return res.status(StatusCodes.GONE).json({ message: 'Need to refresh token' })
+        }
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Token invalid' })
       }
       req.user = user
       next()
